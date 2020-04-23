@@ -1,57 +1,17 @@
-html {
-  font-size: 16px;
+@import url("./normalize.css");
+@import url("./reset.css");
+@import url("./typog.css");
+@import url("./utils.css");
+@import url("./transitions.css");
+
+body {
+  /* border: 5px black solid; */
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+#app {
+  /* border: 5px red solid; */
 
-  /* styles should be coming from reset.scss */
-  margin: 0;
-  padding: 0;
-  line-height: normal;
-  /* normal */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
-
-button {
-  border: unset;
-  background-color: unset;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* TRANSITIONS */
-
-/* FADE */
-
-/* create the transition */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease-in-out;
-  /* , transform 0.3s ease */
-}
-
-/* the next entering component has to await the leaving animation to end */
-.fade-enter-active {
-  transition-delay: 0.3s;
-}
-/* page entering - initial state */
-/* page leaving - final state */
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-  /* transform: translateX(-100px); */
-}
-/* page entering - final state */
-/* page leaving - initial state */
-.fade-enter-to,
-.fade-leave {
-  opacity: 1;
-  /* transform: translateX(0); */
-}
-
-/* POP-OUT */

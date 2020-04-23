@@ -1,15 +1,9 @@
 <template>
-  <!-- @submit.prevent="onSubmit(500)" -->
   <form>
     <label for="title">Title</label>
     <input :disabled="suspense" v-model="request.title" type="text" name="title" />
     <label for="description">Description</label>
-    <textarea
-      :disabled="suspense"
-      v-model="request.description"
-      name="description"
-      style="resize: none; height:200px;"
-    />
+    <textarea :disabled="suspense" v-model="request.description" name="description" />
     <button :disabled="suspense" @click.prevent="!suspense && onSubmit($event)" type="submit">
       <div v-if="!suspense">Add</div>
       <b-spinner v-else small label="Spinning" />
@@ -72,29 +66,28 @@ export default {
 
   input,
   textarea {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    border-radius: 5px;
+    padding: var(--pa-main);
+    margin-bottom: var((--ma-main));
     border: 1px rgb(90, 90, 90) solid;
+    border-radius: 5px;
+  }
+  textarea {
+    height: 200px;
+    resize: none;
   }
   button {
+    padding: var(--pa-main);
+    border: 1px rgb(90, 90, 90) solid;
     border-radius: 5px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   }
 }
 
-@media #{$mobile} {
-  label {
-    margin-bottom: 5px;
-  }
+@media (max-width: $sm) {
+}
 
-  input,
-  textarea {
-    padding: 5px;
-    margin-bottom: 10px;
-  }
-
+@media (min-width: $sm) {
   button {
-    padding: 0.325rem;
+    max-width: 100px;
   }
 }
 </style>

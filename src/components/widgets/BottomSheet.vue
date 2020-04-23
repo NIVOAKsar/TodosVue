@@ -2,11 +2,9 @@
   <section class="bottom-sheet">
     <!-- SEPERATE SECTION -->
     <button class="bottom-sheet__add--btn" @click="onActionClick">
-      <fa-icon class="bottom-sheet__add--btn__i" icon="plus" />
+      <b-icon icon="plus" font-scale="2" class="bottom-sheet__add--btn__i" />
     </button>
     <!-- SEPERATE SECTION -->
-
-    <!-- <button style="border-radius: 10px;border: 2px black solid;">ADD TODO +</button> -->
   </section>
 </template>
 
@@ -29,12 +27,13 @@ export default {
     margin-left: auto;
     background-color: #fff;
     border-radius: 50%;
-    padding: 1rem;
+    width: 3rem;
+    height: 3rem;
 
     &__i {
       // font-size: 1.25rem;
-      width: 1rem;
-      height: 1rem;
+      // width: 1rem;
+      // height: 1rem;
     }
   }
 }

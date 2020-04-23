@@ -1,13 +1,22 @@
-// constants (scss)
-$mobile: "(max-width: 450px)";
-$tablet: "(min-width: 451px) and (max-width: 1250px)";
-$desktop: "(min-width: 1251px)";
+// breakpoints
+$sm: 450px;
+$lg: 1250px;
+
+// media queries
+$mobile: "(max-width: #{$sm})";
+$tablet: "(min-width: #{$sm}) and (max-width: #{$lg})";
+$desktop: "(min-width: #{$lg})";
+
+// margins
 
 // variables (css)
 :root {
   --clr-primary: black;
   --clr-secondary: black;
+  --shadow-primary: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
+
+// if 1rem = 16px;
 
 // 6px = 0.375
 // 8px = 0.5rem

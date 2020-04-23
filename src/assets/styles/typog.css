@@ -1,4 +1,19 @@
-/* BASE STYLYING */
+/* TYPOGRAPHY */
+
+html {
+  font-size: 16px;
+}
+
+body {
+  line-height: 1.3;
+}
+
+#app {
+  font-family: roboto-regular, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 @font-face {
   font-family: poppins-regular;
   src: url(../fonts/Poppins/Poppins-Regular.ttf);

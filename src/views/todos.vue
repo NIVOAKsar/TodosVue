@@ -1,35 +1,38 @@
 <template>
-  <article class="todo-page">
-    <section class="todo-list">
-      <!-- :metatext="todo.createdAt | formatDate('he-IL')" -->
-      <!-- name="pop-out"
-        enter-active-class="animated fadeInRight"
-      leave-active-class="animated fadeOutLeft"-->
+  <article :style="vars" class="todos-page">
+    <section class="todos-list">
       <transition-group v-if="$store.state.todos">
-        <TaskCard
+        <TodoCard
           v-for="todo in todosForDisplay"
           :key="todo.id"
           :id="todo.id"
           :title="todo.title"
           :subtitle="todo.description"
           :is-done="todo.isDone"
-          class="todo-item"
+          class="todos-list-item"
           @updateAction="onTaskCardUpdateAction"
           @removeAction="onTaskCardRemoveAction"
         />
       </transition-group>
     </section>
+    <TodoForm
+      v-if="$mq !=='mobile'"
+      :suspense="formSuspense"
+      class="todos-form"
+      @submit="onTaskFormSubmit"
+    />
 
     <el-dialog
+      v-if="$mq === 'mobile'"
       :visible.sync="showDialog"
       fullscreen
       title="Create Todo"
       @opened="onDialogOpened"
       @closed="onDialogClosed"
     >
-      <TaskForm @submit="onTaskFormSubmit" :suspense="formSuspense" />
+      <TodoForm :suspense="formSuspense" @submit="onTaskFormSubmit" />
     </el-dialog>
-    <BottomSheet v-if="$mq === 'mobile'" class="bottom-sheet--wrapper" @actionClick="openDialog" />
+    <BottomSheet v-if="$mq === 'mobile'" class="todos-bottom-bar" @actionClick="openDialog" />
   </article>
 </template>
 
@@ -40,6 +43,8 @@ import { createTodo } from '@/services/todoService'
 
 import { mapState, mapGetters, mapMutations } from 'vuex';
 
+// import MyComponent from '@/components/MyComponent'
+
 export default {
   name: 'TodosPage',
   props: {
@@ -48,12 +53,13 @@ export default {
     }
   },
   components: {
-    TaskForm: () => ({
-      component: import('@/components/task/TaskForm'),
+
+    TodoForm: () => ({
+      component: import('@/components/todo/TodoForm/index'),
       // loading: Loader
     }),
-    TaskCard: () => ({
-      component: import('@/components/task/TaskCard'),
+    TodoCard: () => ({
+      component: import('@/components/todo/TodoCard/index'),
       // loading: Loader
     }),
     BottomSheet: () => ({
@@ -69,7 +75,6 @@ export default {
   }),
 
   created() {
-
     setTimeout(() => {
       this.suspense = false;
     }, 2000);
@@ -88,7 +93,13 @@ export default {
     }),
     ...mapGetters({
       todosForDisplay: 'todos/todosForDisplay'
-    })
+    }),
+    vars() {
+      return {
+        '--pa-main': this.$mq === 'mobile' ? '8px' : '10px',
+        '--ma-main': this.$mq === 'mobile' ? '8px' : '10px'
+      }
+    }
 
   },
   methods: {
@@ -166,70 +177,72 @@ export default {
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.css");
 
 @media all {
-  .todo-page {
+  .todos-page {
     display: flex;
-    justify-content: center;
-    position: relative;
+    // justify-content: center;
+    position: relative; // for bottom sheet to stick down when fixed
   }
-  .todo-form-trigger {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    // box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-    // box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.11), 0 5px 15px 0 rgba(0, 0, 0, 0.08);
-  }
-
-  .todo-list {
+  .todos-list {
     width: 100%;
   }
+  .todos-list-item {
+    padding: var(--pa-main);
+    border-radius: 5px;
+    box-shadow: var(--shadow-primary);
+  }
+  .todos-form {
+  }
+
+  // .todo-form-trigger {
+  //   // box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  //   // box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  //   // box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.11), 0 5px 15px 0 rgba(0, 0, 0, 0.08);
+  // }
 }
 
-@media #{$mobile} {
-  .todo-page {
-    margin-bottom: 4rem + 1rem;
+@media (max-width: $sm) {
+  .todos-page {
+    margin-bottom: 60px;
+  }
+  .todos-list-item:not(:last-child) {
+    margin-bottom: 10px;
   }
 
-  .todo-form-trigger {
-    position: absolute !important;
-    z-index: 1;
-    bottom: 0;
-    // left: 50%;
-    // right: 50%;
-  }
-
-  .todo-item:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-  .bottom-sheet--wrapper {
+  .todos-bottom-bar {
     position: fixed;
-    width: 100%;
+    // position: sticky;
+    left: 0;
+    right: 0;
     bottom: 0;
-    height: 4rem;
-    padding: 0 1rem;
+    width: 100%;
+    height: 60px;
+    padding: 0 10px;
   }
 }
 
-@media #{$tablet} {
-  .todo-item {
+@media (min-width: $sm) {
+  .todos-page {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: "a b";
+  }
+  .todos-list-item {
     max-width: 300px;
   }
-}
-
-@media #{$desktop} {
-  .todo-item {
-    max-width: 300px;
-  }
-}
-
-@media #{$tablet}, #{$desktop} {
-  .todo-form-trigger {
-    border: none;
-    transition: all 0.3s ease 0s;
+  .todos-list-item:not(:last-child) {
+    margin-bottom: 10px;
   }
 
-  .todo-form-trigger:hover {
-    background-color: #2ee59d;
-    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-    color: #fff;
-    transform: translateY(-7px);
-  }
+  // .todo-form-trigger {
+  //   border: none;
+  //   transition: all 0.3s ease 0s;
+  //   &:hover {
+  //     background-color: #2ee59d;
+  //     box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+  //     color: #fff;
+  //     transform: translateY(-7px);
+  //   }
+  // }
 }
 </style>

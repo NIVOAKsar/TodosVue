@@ -1,8 +1,9 @@
 <template>
-  <aside :style="vars" class="drawer">
+  <!-- v-show="show" -->
+  <aside :style="vars" class="drawer" ref="drawer" :class="{'hidden':!visible}">
     <div class="drawer__content">
       <button class="drawer__content__close--btn" @click="onCloseButtonClick">
-        <fa-icon icon="times" class="drawer__content__close--btn__i" />
+        <b-icon icon="x" scale="1.5" class="drawer__content__close--btn__i" />
       </button>
       <slot name="menu" />
     </div>
@@ -17,7 +18,7 @@ export default {
     }
   },
   data: () => ({
-    width: '70vw'
+    width: '70vw',
   }),
 
 
@@ -46,20 +47,19 @@ export default {
   z-index: 1;
 
   transform: var(--transform);
-  transition: transform 0.3s ease;
+  transition: opacity 0.5s ease, transform 0.3s ease;
   background-color: rgb(255, 255, 255);
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+}
 
-  &__content {
-    height: 100%;
-    &__close--btn {
-      margin-bottom: 1rem;
-      &__i {
-        width: 1.25rem;
-        height: 1.25rem;
-        // font-size: 1.25rem;
-      }
-    }
-  }
+.drawer__content {
+  height: 100%;
+}
+.drawer__content__close--btn {
+  margin-bottom: 16px;
+}
+
+.hidden {
+  opacity: 0;
 }
 </style>

@@ -1,19 +1,19 @@
-// flex utils
+/* flex utils */
 
-.row {
+.u-row {
   display: flex;
   flex-direction: row;
 }
 
-.col {
+.u-col {
   display: flex;
   flex-direction: column;
 }
 
-.padding-none {
+.u-pa-none {
   padding: 0;
 }
 
-.margin-none {
+.u-ma-none {
   margin: 0;
 }

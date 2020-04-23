@@ -4,7 +4,7 @@
       <button v-if="$mq === 'mobile'" class="header__menu--btn" @click="onMenuButtonClick">
         <fa-icon icon="bars" class="header__menu--btn__i" />
       </button>
-      <slot v-if="$mq !== 'mobile'" name="menu" class="row" />
+      <slot v-if="$mq !== 'mobile'" name="menu" />
       <img class="header__logo" src="https://via.placeholder.com/50" alt />
     </el-row>
   </el-card>

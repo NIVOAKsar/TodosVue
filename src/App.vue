@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Header class="header--wrapper" @menuButtonClick="showDrawer = true">
-      <MainMenu class="header__menu row" slot="menu" />
+      <MainMenu class="header__menu u-row" slot="menu" />
     </Header>
     <Drawer
       v-if="$mq === 'mobile'"
@@ -9,13 +9,12 @@
       class="drawer--wrapper"
       @closeButtonClick="showDrawer = false"
     >
-      <MainMenu class="drawer__menu col" slot="menu" />
+      <MainMenu class="drawer__menu u-col" slot="menu" />
     </Drawer>
-    <!-- <BottomSheet v-if="$mq === 'mobile'" class="bottom-sheet--wrapper" /> -->
     <transition name="fade">
       <router-view class="page--wrapper" />
     </transition>
-    <div v-show="showDrawer" class="dark-mask"></div>
+    <div v-show="showDrawer" class="dark-mask" @click="showDrawer = false" />
   </div>
 </template>
 
@@ -34,29 +33,29 @@ export default {
   data: () => ({
     showDrawer: false,
   }),
+  watch: {
+    $mq(val) {
+      if (val !== 'mobile') {
+        this.showDrawer = false;
+      }
+
+    }
+  },
   methods: {
     onTest() {
       console.log('test');
+    },
 
-    }
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @media all {
-  #app {
-    // font-family: Avenir, Helvetica, Arial, sans-serif;
-    font-family: roboto-regular, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    // text-align: center;
-    // color: #2c3e50;
+  .drawer__menu {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
   }
-
   .dark-mask {
     position: fixed;
     width: 100vw;
@@ -69,23 +68,34 @@ export default {
   }
 }
 
-@media #{$mobile} {
+@media (max-width: $sm) {
   .header--wrapper {
-    padding: 1rem;
-    margin-bottom: 1rem;
+    padding: 10px;
+    margin-bottom: 10px;
   }
 
   .drawer--wrapper {
     height: 100%;
-    padding: 1rem;
+    padding: 10px;
   }
 
   .page--wrapper {
-    padding: 0 1rem;
+    padding: 0 10px;
   }
 }
-@media #{$tablet} {
-}
-@media #{$desktop} {
+@media (min-width: $sm) {
+  .header--wrapper {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .drawer--wrapper {
+    height: 100%;
+    padding: 10px;
+  }
+
+  .page--wrapper {
+    padding: 0 100px 0 10px;
+  }
 }
 </style>

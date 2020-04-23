@@ -1,19 +1,26 @@
 <template>
   <nav class="menu">
-    <router-link class="menu__link row" to="/home">
-      <fa-icon class="menu__link__i" icon="home" />
-      <span class="menu__link__label">Home</span>
-    </router-link>
-    <router-link class="menu__link row" to="/todos">
-      <fa-icon class="menu__link__i" icon="th-list"></fa-icon>
-      <span class="menu__link__label">Todos</span>
+    <router-link class="menu__link" v-for="route in routes" :key="route.label" :to="route.url">
+      <b-icon class="menu__link__i" :icon="route.icon" font-scale="2" />
+      <span class="menu__link__label">{{route.label}}</span>
     </router-link>
   </nav>
 </template>
 
 <script>
 export default {
-
+  data: () => ({
+    routes: [{
+      url: '/home',
+      label: 'Home',
+      icon: 'house',
+    },
+    {
+      url: '/todos',
+      label: 'Todos',
+      icon: 'list-task',
+    }]
+  })
 }
 </script>
 
@@ -26,20 +33,31 @@ export default {
   }
 }
 
-@media #{$mobile} {
+@media (max-width: $sm) {
   .menu {
     &__link {
       &:not(:last-child) {
-        margin-bottom: 1rem;
+        margin-bottom: 10px;
       }
       &__i {
-        width: 1.25rem;
-        height: 1.25rem;
-        // font-size: 1rem;
-        margin: 0 1rem 0 0;
+        margin: 0 10px 0 0;
       }
       &__label {
-        font-size: 1rem;
+      }
+    }
+  }
+}
+@media (min-width: $sm) {
+  .menu {
+    &__link {
+      display: flex;
+      flex-direction: column;
+      &:not(:last-child) {
+        margin-right: 10px;
+      }
+      &__i {
+      }
+      &__label {
       }
     }
   }
