@@ -1,12 +1,12 @@
 <template>
-  <div id="app">
-    <Header class="header--wrapper" @menuButtonClick="showDrawer = true">
+  <div id="app" class="u-clr-bg-dark">
+    <Header class="header--wrapper u-clr-bg-normal" @menuButtonClick="showDrawer = true">
       <MainMenu class="header__menu u-row" slot="menu" />
     </Header>
     <Drawer
       v-if="$mq === 'mobile'"
       :visible="showDrawer"
-      class="drawer--wrapper"
+      class="drawer--wrapper u-clr-bg-dark"
       @closeButtonClick="showDrawer = false"
     >
       <MainMenu class="drawer__menu u-col" slot="menu" />
@@ -15,6 +15,7 @@
       <router-view class="page--wrapper" />
     </transition>
     <div v-show="showDrawer" class="dark-mask" @click="showDrawer = false" />
+    <el-slider v-model="colorVal" :min="0" :max="360" class="slider" />
   </div>
 </template>
 
@@ -38,8 +39,19 @@ export default {
       if (val !== 'mobile') {
         this.showDrawer = false;
       }
+    },
+  },
+  computed: {
+    colorVal: {
+      get() {
+        let value = document.documentElement.style.getPropertyValue('--hue-main')
+        return parseInt(value);
+      },
+      set(val) {
+        document.documentElement.style.setProperty('--hue-main', val);
 
-    }
+      }
+    },
   },
   methods: {
     onTest() {
@@ -65,6 +77,11 @@ export default {
 
   .header--wrapper {
     position: sticky;
+  }
+
+  .slider {
+    max-width: 200px;
+    margin: 30px;
   }
 }
 

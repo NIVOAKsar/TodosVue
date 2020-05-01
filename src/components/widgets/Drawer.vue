@@ -48,7 +48,6 @@ export default {
 
   transform: var(--transform);
   transition: opacity 0.5s ease, transform 0.3s ease;
-  background-color: rgb(255, 255, 255);
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
 }
 

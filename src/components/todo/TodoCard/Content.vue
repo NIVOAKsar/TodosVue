@@ -41,6 +41,7 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--clr-font);
   }
   .content__title {
     font-family: roboto-medium;

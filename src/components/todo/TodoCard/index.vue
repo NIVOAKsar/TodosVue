@@ -38,7 +38,11 @@ export default {
     },
     icon: {
       default: 'https://via.placeholder.com/50'
-    }
+    },
+    colorFont: {
+      default: ''
+    },
+
   },
 
   data: () => ({
@@ -50,6 +54,7 @@ export default {
         '--size-checkbox': this.$mq === 'mobile' ? '15px' : '17px',
         '--size-title': this.$mq === 'mobile' ? '18px' : '20px',
         '--size-subtitle': this.$mq === 'mobile' ? '14px' : '16px',
+        '--clr-font': this.colorFont,
       }
     }
   },

@@ -1,4 +1,4 @@
-// breakpoints
+// break points
 $sm: 450px;
 $lg: 1250px;
 
@@ -7,16 +7,29 @@ $mobile: "(max-width: #{$sm})";
 $tablet: "(min-width: #{$sm}) and (max-width: #{$lg})";
 $desktop: "(min-width: #{$lg})";
 
-// margins
-
 // variables (css)
+
 :root {
-  --clr-primary: black;
-  --clr-secondary: black;
+  // background color
+  --hue-main: 190;
+  --clr-bg-lighter: hsl(var(--hue-main), 100%, 85%);
+  --clr-bg-light: hsl(var(--hue-main), 75%, 75%);
+  --clr-bg-normal: hsl(var(--hue-main), 50%, 50%);
+  --clr-bg-dark: hsl(var(--hue-main), 75%, 25%);
+  --clr-bg-darker: hsl(var(--hue-main), 100%, 15%);
+
+  // font color
+  --clr-font-light: rgb(255, 255, 255);
+  --clr-font-dark: rgb(45, 45, 45);
+
+  // shadow
   --shadow-primary: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  --shadow-main: 0 0 5.5px 0.5px var(--clr-bg-light);
 }
 
-// if 1rem = 16px;
+// margins
+
+// if 1rem === 16px =>
 
 // 6px = 0.375
 // 8px = 0.5rem

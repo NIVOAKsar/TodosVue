@@ -17,3 +17,26 @@
 .u-ma-none {
   margin: 0;
 }
+
+.u-clr-bg-lighter {
+  background-color: var(--clr-bg-lighter);
+}
+.u-clr-bg-light {
+  background-color: var(--clr-bg-light);
+}
+.u-clr-bg-normal {
+  background-color: var(--clr-bg-normal);
+}
+.u-clr-bg-dark {
+  background-color: var(--clr-bg-dark);
+}
+.u-clr-bg-darker {
+  background-color: var(--clr-bg-darker);
+}
+
+.u-clr-font-light {
+  color: var(--clr-font-light);
+}
+.u-clr-font-dark {
+  color: var(--clr-font-dark);
+}

@@ -8,8 +8,9 @@
           :id="todo.id"
           :title="todo.title"
           :subtitle="todo.description"
+          color-font="var(--clr-bg-light)"
           :is-done="todo.isDone"
-          class="todos-list-item"
+          class="todos-list-item u-clr-bg-darker"
           @updateAction="onTaskCardUpdateAction"
           @removeAction="onTaskCardRemoveAction"
         />
@@ -179,7 +180,6 @@ export default {
 @media all {
   .todos-page {
     display: flex;
-    // justify-content: center;
     position: relative; // for bottom sheet to stick down when fixed
   }
   .todos-list {
@@ -188,16 +188,10 @@ export default {
   .todos-list-item {
     padding: var(--pa-main);
     border-radius: 5px;
-    box-shadow: var(--shadow-primary);
+    box-shadow: var(--shadow-main);
   }
   .todos-form {
   }
-
-  // .todo-form-trigger {
-  //   // box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  //   // box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  //   // box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.11), 0 5px 15px 0 rgba(0, 0, 0, 0.08);
-  // }
 }
 
 @media (max-width: $sm) {

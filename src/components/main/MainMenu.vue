@@ -19,6 +19,12 @@ export default {
       url: '/todos',
       label: 'Todos',
       icon: 'list-task',
+    },
+    {
+      url: '/test',
+      label: 'Test',
+      icon: '',
+
     }]
   })
 }
@@ -29,6 +35,12 @@ export default {
   .menu {
     &__link {
       align-items: center;
+      &__i {
+        color: var(--clr-bg-light);
+      }
+      &__label {
+        color: var(--clr-bg-light);
+      }
     }
   }
 }

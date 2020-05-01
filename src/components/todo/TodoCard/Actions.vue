@@ -22,9 +22,11 @@ export default {
 }
 .actions__delete__i {
   font-size: var(--size-title);
+  color: var(--clr-font);
 }
 .actions__delete__spinner {
   width: var(--size-title);
   height: var(--size-title);
+  color: var(--clr-bg-light);
 }
 </style>
