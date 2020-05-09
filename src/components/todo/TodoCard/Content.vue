@@ -1,11 +1,20 @@
 <template>
   <div class="content">
-    <label v-if="!editTitle" :class="isDone && 'done'" title="Edit" class="content__title">
+    <label
+      :class="isDone && 'done'"
+      title="Edit"
+      class="content__title"
+      @click.prevent="$emit('toggleDone')"
+    >
       {{title}}
       <input v-model="editTitle" type="checkbox" hidden />
     </label>
-    <input v-if="editTitle && !isDone" :value="title" type="text" class="content__title" />
-    <label :class="isDone && 'done'" title="Edit" class="content__subtitle">{{subtitle}}</label>
+    <label
+      :class="isDone && 'done'"
+      title="Edit"
+      class="content__subtitle"
+      @click.prevent="$emit('toggleDone')"
+    >{{subtitle}}</label>
   </div>
 </template>
 
@@ -14,14 +23,9 @@ export default {
   props: ['id', 'isDone', 'title', 'subtitle'],
   data: () => ({
     editTitle: false,
-    ediSubtitle: false
+    ediSubtitle: false,
   }),
-  methods: {
-    onChange(ev) {
-      console.log(ev);
 
-    }
-  }
 
 }
 </script>

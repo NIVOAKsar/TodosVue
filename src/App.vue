@@ -15,7 +15,7 @@
       <router-view class="page--wrapper" />
     </transition>
     <div v-show="showDrawer" class="dark-mask" @click="showDrawer = false" />
-    <el-slider v-model="colorVal" :min="0" :max="360" class="slider" />
+    <!-- <el-slider v-model="colorVal" :min="0" :max="360" class="slider" /> -->
   </div>
 </template>
 
@@ -45,7 +45,7 @@ export default {
     colorVal: {
       get() {
         let value = document.documentElement.style.getPropertyValue('--hue-main')
-        return parseInt(value);
+        return value ? parseInt(value) : 190;
       },
       set(val) {
         document.documentElement.style.setProperty('--hue-main', val);
@@ -53,12 +53,7 @@ export default {
       }
     },
   },
-  methods: {
-    onTest() {
-      console.log('test');
-    },
 
-  }
 }
 </script>
 
@@ -91,28 +86,24 @@ export default {
     margin-bottom: 10px;
   }
 
+  .page--wrapper {
+    padding: 0 10px;
+  }
+
   .drawer--wrapper {
     height: 100%;
     padding: 10px;
-  }
-
-  .page--wrapper {
-    padding: 0 10px;
   }
 }
 @media (min-width: $sm) {
   .header--wrapper {
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .drawer--wrapper {
     height: 100%;
     padding: 10px;
-  }
-
-  .page--wrapper {
-    padding: 0 100px 0 10px;
   }
 }
 </style>

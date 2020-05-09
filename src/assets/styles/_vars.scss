@@ -1,16 +1,21 @@
-// break points
+// break-points
 $sm: 450px;
 $lg: 1250px;
 
-// media queries
+// media-queries
 $mobile: "(max-width: #{$sm})";
 $tablet: "(min-width: #{$sm}) and (max-width: #{$lg})";
 $desktop: "(min-width: #{$lg})";
 
-// variables (css)
-
 :root {
-  // background color
+  // background-colors (testing)
+  // --clr-bg-lighter: #fff;
+  // --clr-bg-light: #fff;
+  // --clr-bg-normal: #fff;
+  // --clr-bg-dark: #fff;
+  // --clr-bg-darker: #fff;
+
+  // background-colors
   --hue-main: 190;
   --clr-bg-lighter: hsl(var(--hue-main), 100%, 85%);
   --clr-bg-light: hsl(var(--hue-main), 75%, 75%);
@@ -18,11 +23,11 @@ $desktop: "(min-width: #{$lg})";
   --clr-bg-dark: hsl(var(--hue-main), 75%, 25%);
   --clr-bg-darker: hsl(var(--hue-main), 100%, 15%);
 
-  // font color
+  // font-colors
   --clr-font-light: rgb(255, 255, 255);
   --clr-font-dark: rgb(45, 45, 45);
 
-  // shadow
+  // shadows
   --shadow-primary: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   --shadow-main: 0 0 5.5px 0.5px var(--clr-bg-light);
 }

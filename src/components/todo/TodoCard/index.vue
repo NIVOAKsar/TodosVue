@@ -8,8 +8,19 @@
         @change="onChange"
         class="card__label__checkbox"
       />
-      <Content :style="vars" :is-done="isDone" :title="title" :subtitle="subtitle" />
-      <Actions :style="vars" :suspense="suspense" @click="!suspense && onRemove(350)" />
+      <Content
+        :style="vars"
+        :is-done="isDone"
+        :title="title"
+        :subtitle="subtitle"
+        @toggleDone="onToggleDone"
+      />
+      <Actions
+        :style="vars"
+        :suspense="suspense"
+        @deleteClick="!suspense && onRemove(350)"
+        @editClick="!suspense && onEdit(null)"
+      />
     </label>
   </section>
 </template>
@@ -46,7 +57,7 @@ export default {
   },
 
   data: () => ({
-    suspense: false
+    suspense: false,
   }),
   computed: {
     vars() {
@@ -59,16 +70,26 @@ export default {
     }
   },
   methods: {
-    onChange(ev) {
-      this.$emit('updateAction', { id: this.id, val: ev.target.checked })
+    onEdit(delay) {
+      const emit = () => {
+        this.$emit('editAction', this.id);
+      }
+      setTimeout(emit, delay || 0);
     },
     onRemove(delay) {
       const emit = () => {
-        this.$emit('removeAction', { id: this.id })
+        this.$emit('removeAction', this.id);
       }
       this.suspense = true;
       setTimeout(emit, delay || 0);
+    },
+    onChange(ev) {
+      this.$emit('updateAction', this.id);
+    },
+    onToggleDone() {
+      this.$emit('updateAction', this.id);
     }
+
   }
 
 }
