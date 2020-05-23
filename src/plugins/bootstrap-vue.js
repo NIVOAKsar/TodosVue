@@ -1,11 +1,14 @@
 import Vue from 'vue'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
-// Code Plugin
-Vue.use(BootstrapVue)
-
-// Code Plugin - Optional
+// Custom Plugin
+import { IconsPlugin, BSpinner } from 'bootstrap-vue'
 Vue.use(IconsPlugin)
+Vue.component('b-spinner', BSpinner)
+
+
+// Global Plugin
+// import { BootstrapVue } from 'bootstrap-vue'
+// Vue.use(BootstrapVue)
 
 
 // Style Plugin

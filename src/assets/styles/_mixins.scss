@@ -1,0 +1,47 @@
+@mixin scrollbar() {
+    &::-webkit-scrollbar {
+        z-index: 500;
+        width: 16px;
+        // background-color: var(--color1-light);
+        background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        box-shadow: inset 0px 0px 0px 2px var(--clr-bg-light);
+        background-color: var(--clr-bg-dark);
+    }
+    &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 7px 2px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        background-color: var(--clr-bg-normal);
+    }
+    // &::-webkit-scrollbar-button:single-button {
+    //   &:vertical {
+    //     background-size: 10px;
+    //     background-position: center;
+    //     background-repeat: no-repeat;
+    //     &:decrement {
+    //       // background-image: url(../img/scrollbar/up.svg);
+    //     }
+    //     &:increment {
+    //       // background-image: url(../img/scrollbar/down.svg);
+    //     }
+    //     &:hover {
+    //       background-color: #293446;
+    //     }
+    //   }
+    //   &:horizontal {
+    //     background-size: 10px;
+    //     background-position: center;
+    //     background-repeat: no-repeat;
+    //     &:decrement {
+    //       // background-image: url(../img/scrollbar/left.svg);
+    //     }
+    //     &:increment {
+    //       // background-image: url(../img/scrollbar/right.svg);
+    //     }
+    //     &:hover {
+    //       background-color: #293446;
+    //     }
+    //   }
+}

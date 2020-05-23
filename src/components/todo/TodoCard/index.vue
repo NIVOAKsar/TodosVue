@@ -1,5 +1,5 @@
 <template>
-  <section :style="vars" class="card">
+  <div :style="vars" :class="isDone && 'done'" class="card">
     <label :for="`checkbox-${this.id}`" class="card__label">
       <input
         :id="`checkbox-${this.id}`"
@@ -22,7 +22,7 @@
         @editClick="!suspense && onEdit(null)"
       />
     </label>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -54,10 +54,14 @@ export default {
       default: ''
     },
 
+    suspense: {
+      default: false
+    }
+
   },
 
   data: () => ({
-    suspense: false,
+    // suspense: false,
   }),
   computed: {
     vars() {
@@ -71,17 +75,10 @@ export default {
   },
   methods: {
     onEdit(delay) {
-      const emit = () => {
-        this.$emit('editAction', this.id);
-      }
-      setTimeout(emit, delay || 0);
+      this.$emit('editAction', this.id);
     },
     onRemove(delay) {
-      const emit = () => {
-        this.$emit('removeAction', this.id);
-      }
-      this.suspense = true;
-      setTimeout(emit, delay || 0);
+      this.$emit('removeAction', this.id);
     },
     onChange(ev) {
       this.$emit('updateAction', this.id);
@@ -97,9 +94,15 @@ export default {
 
 <style lang="scss" scoped>
 @media all {
+  .done {
+    opacity: 0.5;
+  }
   .card {
+    transition: 0.6s ease;
   }
   .card__label {
+    flex-grow: 1;
+    padding: var(--pa-main);
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -107,8 +110,8 @@ export default {
   }
   .card__label__checkbox {
     margin: 0 var(--ma-main) 0 0;
-    width: var(--size-checkbox);
-    height: var(--size-checkbox);
+    min-width: var(--size-checkbox);
+    min-height: var(--size-checkbox);
   }
 }
 </style>

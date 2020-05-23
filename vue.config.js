@@ -1,5 +1,6 @@
 const prependData = `
 @import "@/assets/styles/_vars.scss";
+@import "@/assets/styles/_mixins.scss";
 `
 // $material-icons-font-path: '~material-icons/iconfont/';
 // @import '~material-icons/iconfont/material-icons.scss';

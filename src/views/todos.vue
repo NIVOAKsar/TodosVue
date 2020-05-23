@@ -1,32 +1,52 @@
 <template>
   <article :style="vars" class="todos-page">
-    <section class="todos-list">
-      <transition-group v-if="todosForDisplay">
-        <TodoCard
-          v-for="todo in todosForDisplay"
-          :key="todo.id"
-          :id="todo.id"
-          :title="todo.title"
-          :subtitle="todo.description"
-          :is-done="todo.isDone"
-          color-font="var(--clr-bg-light)"
-          class="todos-list-item u-clr-bg-darker"
-          @updateAction="onTaskCardUpdateAction"
-          @editAction="onTaskCardEditAction"
-          @removeAction="onTaskCardRemoveAction"
+    <div class="todo-content">
+      <section class="todo-list">
+        <transition-group v-if="todosForDisplay">
+          <TodoCard
+            v-for="todo in todosForDisplay"
+            :key="todo.id"
+            :id="todo.id"
+            :title="todo.title"
+            :subtitle="todo.description"
+            :is-done="todo.isDone"
+            :color-font="'var(--clr-bg-light)'"
+            :suspense="todos[todo.id] && todos[todo.id].isSyncing"
+            class="todo-list-item u-clr-bg-darker"
+            @updateAction="onTaskCardUpdateAction"
+            @editAction="onTaskCardEditAction"
+            @removeAction="onTaskCardRemoveAction"
+          />
+        </transition-group>
+      </section>
+      <section v-if="$mq !=='mobile'" class="todo-editor">
+        <p class="todo-editor-title">{{currDialogTitle}}</p>
+        <TodoForm
+          v-show="currDialogView === 'create'"
+          :request="formRequest"
+          :suspense="suspenseCreate"
+          :action-text="'Add'"
+          class="todo-editor-form"
+          @changeTitle="onTaskFormChangeTitle"
+          @changeDescription="onTaskFormChangeDescription"
+          @submit="onTaskFormCreateSubmit"
         />
-      </transition-group>
-    </section>
-    <TodoForm
-      v-if="$mq !=='mobile'"
-      :request="formRequest"
-      :suspense="formSuspense"
-      :action-text="'Add'"
-      class="todo-form"
-      @changeTitle="onTaskFormChangeTitle"
-      @changeDescription="onTaskFormChangeDescription"
-      @submit="onTaskFormCreateSubmit"
-    />
+        <TodoForm
+          v-show="currDialogView === 'details'"
+          :id="formId"
+          :request="formRequest"
+          :suspense="todos[formId] && todos[formId].isSyncing"
+          :action-text="'Save'"
+          class="todo-editor-form"
+          @changeTitle="onTaskFormChangeTitle"
+          @changeDescription="onTaskFormChangeDescription"
+          @submit="onTaskFormEditSubmit"
+        />
+        <!-- <button v-if="$mq !=='mobile'" class="todo-editor-form">New</button> -->
+      </section>
+    </div>
+    <button v-if="checkAddButton" class="todo-add" @click="onTaskAddClick">New</button>
+
     <el-dialog
       v-if="$mq === 'mobile'"
       :visible.sync="showDialog"
@@ -38,7 +58,7 @@
       <TodoForm
         v-show="currDialogView === 'create'"
         :request="formRequest"
-        :suspense="formSuspense"
+        :suspense="suspenseCreate"
         :action-text="'Add'"
         @changeTitle="onTaskFormChangeTitle"
         @changeDescription="onTaskFormChangeDescription"
@@ -48,7 +68,7 @@
         v-show="currDialogView === 'details'"
         :id="formId"
         :request="formRequest"
-        :suspense="formSuspense"
+        :suspense="todos[formId] && todos[formId].isSyncing"
         :action-text="'Save'"
         @changeTitle="onTaskFormChangeTitle"
         @changeDescription="onTaskFormChangeDescription"
@@ -57,7 +77,7 @@
     </el-dialog>
     <BottomSheet
       v-if="$mq === 'mobile'"
-      class="todos-bottom-bar"
+      class="todo-bottom-bar"
       @actionClick="openDialog('create')"
     />
   </article>
@@ -66,7 +86,8 @@
 <script>
 
 import todosStore from '@/store/todos'
-import { createTodo } from '@/services/todoService'
+import { makeTodo } from '@/services/todoService'
+import { makeId } from '@/services/utilsService'
 
 import { mapState, mapGetters, mapMutations } from 'vuex';
 
@@ -99,21 +120,16 @@ export default {
 
   },
   data: () => ({
-    suspense: true,
+    suspenseCreate: false,
     formId: '',
-    formRequest: null,
-    formSuspense: false,
+    formRequest: {
+      title: '',
+      description: ''
+    },
     showDialog: false,
-    currDialogView: '',
+    currDialogView: 'create',
     currDialogTitle: 'Create Todo',
   }),
-
-  created() {
-    setTimeout(() => {
-      this.suspense = false;
-    }, 2000);
-
-  },
   mounted() {
     // this.$store.registerModule('todos', todosStore)
 
@@ -128,6 +144,11 @@ export default {
     ...mapGetters({
       todosForDisplay: 'todos/todosForDisplay'
     }),
+    checkAddButton() {
+      if (this.$mq !== 'mobile') {
+        return this.suspenseCreate ? false : true
+      }
+    },
     vars() {
       return {
         '--pa-main': this.$mq === 'mobile' ? '8px' : '10px',
@@ -141,7 +162,6 @@ export default {
       assignTodos: 'todos/assignTodos',
       assignTodo: 'todos/assignTodo',
       unassignTodos: 'todos/unassignTodos'
-
     }),
     onTaskCardEditAction(id) {
       // update ui
@@ -149,13 +169,17 @@ export default {
     },
     onTaskCardUpdateAction(id) {
       // update state
-      let payload = { id, key: 'isDone', val: !this.todos[id].isDone }
-      this.assignTodo(payload)
-
+      this.assignTodo({ id, key: 'isDone', val: !this.todos[id].isDone })
     },
     onTaskCardRemoveAction(id) {
-      // update state
-      this.unassignTodos(id);
+      // update state & ui
+      this.assignTodo({ id, key: 'isSyncing', val: true })
+
+      const onSave = () => {
+        this.unassignTodos(id)
+      }
+
+      setTimeout(onSave, 350);
     },
     onTaskFormChangeTitle($event) {
       // update state
@@ -164,78 +188,82 @@ export default {
     onTaskFormChangeDescription($event) {
       // update state
       this.formRequest.description = $event.target.value;
-
     },
     onTaskFormCreateSubmit() {
       // update ui
-      this.formSuspense = true;
+      this.suspenseCreate = true;
 
       // update state
-      let todo = createTodo(this.formRequest.title, this.formRequest.description)
-      let payload = { id: todo.id, val: todo }
-      this.assignTodos(payload)
-      // next => saveTodo.then(() => this.formSuspense = false this.showDialog = false;)
+      let todo = makeTodo(this.formRequest.title, this.formRequest.description)
+      this.assignTodos({ id: makeId(4), val: todo })
 
-      // update ui
-      setTimeout(() => {
-        this.showDialog = false;
-        this.formSuspense = false;
-        this.formRequest = null;
+      const onSave = () => {
+        // update state & ui
+        this.suspenseCreate = false
 
-      }, 2000);
+        if (this.currDialogView === 'create') {
+          this.showDialog = false;
+          this.formRequest = { title: '', description: '' };
+        }
+      }
+
+      setTimeout(onSave, 2000);
 
     },
     onTaskFormEditSubmit(id) {
-
-      // update ui
-      this.formSuspense = true;
-
-      // update state
+      // update state & ui
+      this.assignTodo({ id, key: 'isSyncing', val: true })
       this.assignTodo({ id, key: 'title', val: this.formRequest.title })
       this.assignTodo({ id, key: 'description', val: this.formRequest.description })
-      // next => saveTodo.then(() => this.formSuspense = false this.showDialog = false;)
+
+      const onSave = () => {
+        // update state & ui
+        this.assignTodo({ id, key: 'isSyncing', val: false })
+
+        // update ui
+        if (this.currDialogView === 'details') {
+          this.showDialog = false;
+
+        }
+      }
+
+      setTimeout(onSave, 2000);
+    },
+    onTaskAddClick() {
+      // update state 
+      this.formId = '';
+      this.currDialogView = 'create'
 
       // update ui
-      setTimeout(() => {
-        this.showDialog = false;
-        this.formSuspense = false;
-        this.formRequest = null;
-      }, 2000);
+      this.currDialogTitle = 'Create Todo';
+      this.formRequest = { title: '', description: '' };
     },
     onDialogOpened() {
       console.log('opened => focus the input');
-
     },
     onDialogClosed() {
     },
     openDialog(view, targetId) {
-      const action = () => {
-        this.currDialogView = view;
-        switch (view) {
-          case 'create': this.currDialogTitle = 'Create Todo';
-            this.formRequest = {
-              title: '',
-              description: ''
-            };
+      // update state & ui
+      switch (view) {
+        case 'create': this.currDialogTitle = 'Create Todo';
+          this.formRequest = { title: '', description: '' };
+          break;
 
-            break;
+        case 'details': this.currDialogTitle = 'Edit Todo';
+          this.formId = targetId;
+          this.formRequest = {
+            title: this.todos[targetId].title,
+            description: this.todos[targetId].description,
+          };
 
-          case 'details': this.currDialogTitle = 'Edit Todo';
-            this.formId = targetId;
-            this.formRequest = {
-              title: this.todos[targetId].title,
-              description: this.todos[targetId].description,
-            };
-
-            break;
-        }
-        this.showDialog = true;
+          break;
       }
-      setTimeout(action);
+      this.currDialogView = view;
+      this.showDialog = true;
     },
     closeDialog() {
       this.showDialog = false;
-
     }
 
   }
@@ -249,11 +277,11 @@ export default {
 @media all {
   .todos-page {
     display: flex;
+    flex-direction: column;
     position: relative; // for bottom sheet to stick down when fixed
   }
 
-  .todos-list-item {
-    padding: var(--pa-main);
+  .todo-list-item {
     border-radius: 5px;
     box-shadow: var(--shadow-main);
   }
@@ -272,13 +300,13 @@ export default {
   .todos-page {
     margin-bottom: calc(60px + var(--ma-main));
   }
-  .todos-list {
+  .todo-list {
     width: 100%;
   }
-  .todos-list-item:not(:last-child) {
+  .todo-list-item:not(:last-child) {
     margin-bottom: 10px;
   }
-  .todos-bottom-bar {
+  .todo-bottom-bar {
     position: fixed;
     // position: sticky;
     left: 0;
@@ -293,43 +321,57 @@ export default {
 @media (min-width: $sm) {
   .todos-page {
     margin-bottom: var(--ma-main);
-
-    // display: grid;
-    // grid-gap: 20px;
-    // grid-template-columns: repeat(2, 1fr);
-    // grid-template-areas: "a b";
-
     display: flex;
     justify-content: space-between;
   }
-  .todos-list {
+
+  .todo-content {
+    display: flex;
+    position: relative;
+  }
+  .todo-content::after {
+    border: 1px black solid;
+    width: 500px;
+    height: 500px;
+    background-color: red;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+  .todo-list {
     max-height: 70vh;
     overflow-y: auto;
     padding: 10px 20px;
-    // width:100%; for grid only
+    min-width: 30%;
+    @include scrollbar;
   }
-  .todos-list-item {
+  .todo-list-item {
     max-width: 300px;
   }
-  .todos-list-item:not(:last-child) {
+  .todo-list-item:not(:last-child) {
     margin-bottom: 10px;
   }
-
-  .todo-form {
+  .todo-editor {
     flex-grow: 1;
+  }
+  .todo-editor-title {
+    color: var(--clr-bg-light);
+    padding: 10px 20px;
+  }
+  .todo-editor-form {
     padding: 10px 20px;
     // margin: 0 0 0 20px;
   }
 
-  // .todo-form-trigger {
-  //   border: none;
-  //   transition: all 0.3s ease 0s;
-  //   &:hover {
-  //     background-color: #2ee59d;
-  //     box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-  //     color: #fff;
-  //     transform: translateY(-7px);
-  //   }
-  // }
+  .todo-add {
+    max-width: 100px;
+    color: var(--clr-bg-light);
+    font-weight: bold;
+    border-radius: 5px;
+    background-color: var(--clr-bg-darker);
+    padding: var(--pa-main);
+    margin: 20px;
+  }
 }
 </style>

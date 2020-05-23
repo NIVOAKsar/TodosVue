@@ -36,7 +36,7 @@ export function setCountDown(ms) {
     }, 1000)
 }
 
-export function setDelay(ms = 0) {
+export function wait(ms = 0) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 

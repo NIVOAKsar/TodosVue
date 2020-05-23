@@ -1,13 +1,17 @@
 <template>
   <div class="actions">
     <button class="action__edit action" @click.prevent="$emit('editClick')">
-      <fa-icon class="action__edit__i action__i" icon="pen" />
-      <!-- <b-spinner v-else small label="Spinning" class="action__edit__spinner action__spinner" /> -->
+      <fa-icon v-if="!suspense" class="action__edit__i action__i" icon="pen" />
     </button>
     <button class="action__delete action" @click.prevent="$emit('deleteClick')">
       <fa-icon v-if="!suspense" class="action__delete__i action__i" icon="trash" />
-      <b-spinner v-else small label="Spinning" class="action__delete__spinner action__spinner" />
     </button>
+    <b-spinner
+      v-if="suspense"
+      small
+      label="Spinning"
+      class="action__delete__spinner action__spinner"
+    />
   </div>
 </template>
 

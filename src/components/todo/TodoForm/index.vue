@@ -1,5 +1,5 @@
 <template>
-  <form id="form">
+  <form>
     <label for="title">Title</label>
     <input
       :disabled="suspense"
@@ -39,27 +39,24 @@ export default {
       default: ''
     }
   },
-  data: () => ({
-    // request: {
-    //   title: '',
-    //   description: ''
-    // },
-  }),
+
   mounted() {
     // register event bus for dialog opened to focus input
   },
 
   methods: {
     onSubmit(delay) {
-      // console.log(ev);
-      // console.log(this.request.title);
-      // console.log(this.request.description);
+
+
 
       //validation
       if (!this.request.title || !this.request.description) {
         alert('All fields are required')
         return;
       }
+      console.log('here');
+
+
       let request = JSON.parse(JSON.stringify(this.request))
       this.$emit('submit', this.id)
       // this.$watch('suspense', val => {

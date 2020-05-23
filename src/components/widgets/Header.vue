@@ -1,13 +1,15 @@
 <template>
   <Header class="header">
     <!-- <el-card :body-style="{padding: 0}" shadow="always" class="header"> -->
-    <el-row type="flex" justify="space-between">
+    <div style="display: flex; justify-content: space-between;">
+      <!-- <el-row type="flex" justify="space-between"> -->
       <button v-if="$mq === 'mobile'" class="header__menu--btn" @click="onMenuButtonClick">
         <fa-icon icon="bars" class="header__menu--btn__i" />
       </button>
       <slot v-if="$mq !== 'mobile'" name="menu" />
       <img class="header__logo" src="https://via.placeholder.com/50" alt />
-    </el-row>
+      <!-- </el-row> -->
+    </div>
     <!-- </el-card> -->
   </Header>
 </template>
