@@ -1,4 +1,5 @@
-import { makeId } from '@/services/utilsService'
+import { makeId, makeObjectId } from '@/services/utilsService'
+
 
 // factory
 export function makeTodo(title, description) {
@@ -28,7 +29,9 @@ export function makeTodos() {
     ]
 
     return contents.reduce((acc, val) => {
-        acc[makeId(4)] = val;
+        const id = makeObjectId()
+        acc[id] = val;
+        // acc[makeId(4)] = val;
         return acc;
     }, {})
 

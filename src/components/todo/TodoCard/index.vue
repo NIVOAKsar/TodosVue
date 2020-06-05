@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     onEdit(delay) {
-      this.$emit('editAction', this.id);
+      this.$emit('edit', this.id);
     },
     onRemove(delay) {
       this.$emit('removeAction', this.id);

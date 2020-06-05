@@ -13,8 +13,8 @@
             :color-font="'var(--clr-bg-light)'"
             :suspense="todos[todo.id] && todos[todo.id].isSyncing"
             class="todo-list-item u-clr-bg-darker"
+            @edit="onTaskCardEdit"
             @updateAction="onTaskCardUpdateAction"
-            @editAction="onTaskCardEditAction"
             @removeAction="onTaskCardRemoveAction"
           />
         </transition-group>
@@ -89,7 +89,7 @@ import todosStore from '@/store/todos'
 import { makeTodo } from '@/services/todoService'
 import { makeId } from '@/services/utilsService'
 
-import { mapState, mapGetters, mapMutations } from 'vuex';
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
 
 
 export default {
@@ -130,9 +130,36 @@ export default {
     currDialogView: 'create',
     currDialogTitle: 'Create Todo',
   }),
+  created() {
+    if (!Object.entries(this.todos).length) {
+      const ids = [ // TODO: load from user document
+        '5edaa12763bb8e0000860bb2',
+        '5edaa12763bb8e0000860bb3',
+        '5edaa12763bb8e0000860bb4',
+        '5edaa12763bb8e0000860bb5',
+        '5edaa12763bb8e0000860bb6',
+        '5edaa12763bb8e0000860bb7',
+        '5edaa12763bb8e0000860bb8',
+        '5edaa12763bb8e0000860bb9',
+        '5edaa12763bb8e0000860bba',
+        '5edaa12763bb8e0000860bbb',
+      ]
+
+      const onSuccess = () => {
+        console.log('[CLIENT] load succeeded!')
+      }
+      const onFailure = (error) => {
+        console.log('[CLIENT]', error)
+      }
+
+      this.loadMany(ids)
+        .then(onSuccess)
+        .catch(onFailure)
+    }
+
+  },
   mounted() {
     // this.$store.registerModule('todos', todosStore)
-
   },
   beforeDestroy() {
     // this.$store.unregisterModule('todos')
@@ -144,6 +171,7 @@ export default {
     ...mapGetters({
       todosForDisplay: 'todos/todosForDisplay'
     }),
+
     checkAddButton() {
       if (this.$mq !== 'mobile') {
         return this.suspenseCreate ? false : true
@@ -163,42 +191,79 @@ export default {
       assignTodo: 'todos/assignTodo',
       unassignTodos: 'todos/unassignTodos'
     }),
-    onTaskCardEditAction(id) {
+    ...mapActions({
+      loadMany: 'todos/loadMany',
+      removeMany: 'todos/removeMany',
+      updateMany: 'todos/updateMany'
+
+    }),
+    onTaskCardEdit(id) {
       // update ui
       this.openDialog('details', id)
     },
-    onTaskCardUpdateAction(id) {
-      // update state
-      this.assignTodo({ id, key: 'isDone', val: !this.todos[id].isDone })
-    },
-    onTaskCardRemoveAction(id) {
-      // update state & ui
-      this.assignTodo({ id, key: 'isSyncing', val: true })
-
-      const onSave = () => {
-        this.unassignTodos(id)
+    async onTaskCardUpdateAction(id) {
+      // callbacks
+      const onSuccess = () => {
+        console.log('[CLIENT]', `${id} was updated on server`);
+      }
+      const onFailure = (error) => {
+        console.log('[CLIENT]', error);
       }
 
-      setTimeout(onSave, 350);
+      // update api
+      const payload = {
+        [id]: {
+          isDone: !this.todos[id].isDone
+        }
+      }
+      try {
+        await this.updateMany(payload)
+        onSuccess()
+      }
+      catch (error) {
+        onFailure(error)
+      }
+
+      // update state
+      this.assignTodo({ id, key: 'isDone', val: !this.todos[id].isDone })
+
+    },
+    async onTaskCardRemoveAction(id) {
+      // callbacks
+      const onSuccess = () => {
+        console.log('[CLIENT]', `${id} was removed on server`)
+      }
+      const onFailure = (error) => {
+        console.log('[CLIENT]', error)
+      }
+
+      // update api
+      try {
+        const ids = [id]
+        await this.removeMany(ids)
+        onSuccess()
+      }
+      catch (error) {
+        onFailure(error)
+      }
+
+      // update state
+      setTimeout(() => {
+        this.unassignTodos(id)
+      }, 350);
+
+      this.assignTodo({ id, key: 'isSyncing', val: true })
     },
     onTaskFormChangeTitle($event) {
-      // update state
       this.formRequest.title = $event.target.value;
     },
     onTaskFormChangeDescription($event) {
-      // update state
       this.formRequest.description = $event.target.value;
     },
     onTaskFormCreateSubmit() {
-      // update ui
-      this.suspenseCreate = true;
-
-      // update state
-      let todo = makeTodo(this.formRequest.title, this.formRequest.description)
-      this.assignTodos({ id: makeId(4), val: todo })
-
-      const onSave = () => {
-        // update state & ui
+      // callbacks
+      const onSuccess = () => {
+        // update ui
         this.suspenseCreate = false
 
         if (this.currDialogView === 'create') {
@@ -207,27 +272,54 @@ export default {
         }
       }
 
-      setTimeout(onSave, 2000);
+      // update ui
+      this.suspenseCreate = true;
 
+      // update api
+      setTimeout(onSuccess, 2000);
+
+      // update state
+      let todo = makeTodo(this.formRequest.title, this.formRequest.description)
+      const { makeObjectId } = import('@/services/utilsService')
+      this.assignTodos({ id: makeObjectId(), val: todo })
     },
-    onTaskFormEditSubmit(id) {
-      // update state & ui
-      this.assignTodo({ id, key: 'isSyncing', val: true })
-      this.assignTodo({ id, key: 'title', val: this.formRequest.title })
-      this.assignTodo({ id, key: 'description', val: this.formRequest.description })
+    async onTaskFormEditSubmit(id) {
+      // callbacks
+      const onSuccess = () => {
 
-      const onSave = () => {
-        // update state & ui
+        console.log('[CLIENT]', `${id} was updated on server`);
+
+        // update state
         this.assignTodo({ id, key: 'isSyncing', val: false })
 
         // update ui
         if (this.currDialogView === 'details') {
           this.showDialog = false;
-
         }
       }
+      const onFailure = (error) => {
+        console.log('[CLIENT]', error);
+      }
 
-      setTimeout(onSave, 2000);
+      // update api
+      const payload = {
+        [id]: {
+          title: this.formRequest.title,
+          description: this.formRequest.description
+        }
+      }
+      try {
+        await this.updateMany(payload)
+        onSuccess()
+      }
+      catch (error) {
+        onFailure(error)
+      }
+
+      // update state
+      this.assignTodo({ id, key: 'isSyncing', val: true })
+      this.assignTodo({ id, key: 'title', val: this.formRequest.title })
+      this.assignTodo({ id, key: 'description', val: this.formRequest.description })
     },
     onTaskAddClick() {
       // update state 
@@ -239,12 +331,13 @@ export default {
       this.formRequest = { title: '', description: '' };
     },
     onDialogOpened() {
-      console.log('opened => focus the input');
+      // console.log('opened => focus the input');
     },
     onDialogClosed() {
+      // console.log('closed');
+
     },
     openDialog(view, targetId) {
-      // update state & ui
       switch (view) {
         case 'create': this.currDialogTitle = 'Create Todo';
           this.formRequest = { title: '', description: '' };

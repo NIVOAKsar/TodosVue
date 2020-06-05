@@ -1,9 +1,15 @@
+import mongoose from 'mongoose'
+
 export function loadStorage(key) {
     return JSON.parse(localStorage.getItem(key));
 }
 
 export function saveStorage(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
+}
+
+export function makeObjectId() {
+    return new mongoose.Types.ObjectId().toHexString()
 }
 
 export function makeId(length = 4) {

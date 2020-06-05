@@ -3,11 +3,17 @@ import { loadStorage, saveStorage, } from '@/services/utilsService';
 import { makeTodos } from '@/services/todoService';
 
 
+const Axios = require('axios')
+
+const axios = Axios.create({
+    baseURL: 'http://localhost:3003/api',
+});
 
 
 let state = () => {
 
-    const todos = loadStorage('todos') || makeTodos();
+    // const todos = loadStorage('todos') || {}
+    const todos = {}
 
     saveStorage('todos', todos)
     return {
@@ -42,6 +48,45 @@ let mutations = {
     }
 }
 let actions = {
+
+    async loadMany({ commit }, ids) {
+        if (!ids || !ids.length) throw new Error('no ids sent')
+        ids = ids.join(',')
+        try {
+            const { data } = await axios.get('/todos/' + ids)
+            Object.entries(data).forEach(([id, val]) => {
+
+                val = { ...val, isSyncing: false }
+                commit('assignTodos', { id, val })
+            })
+        }
+        catch (error) {
+            throw new Error(error)
+        }
+    },
+    async removeMany({ }, ids) {
+        if (!ids || !ids.length) throw new Error('no ids sent')
+        ids = ids.join(',')
+        try {
+            await axios.delete('/todos/' + ids)
+        }
+        catch (error) {
+            throw new Error(error)
+        }
+    },
+    async updateMany({ }, payload) {
+        if (!payload || !Object.entries(payload).length) throw new Error('no data sent')
+        try {
+            await axios.patch('/todos', payload)
+        }
+        catch (error) {
+            throw new Error(error)
+        }
+    },
+
+    // saveMany({ }, payload) {
+    // },
+
 }
 
 

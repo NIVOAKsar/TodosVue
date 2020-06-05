@@ -54,7 +54,6 @@ export default {
         alert('All fields are required')
         return;
       }
-      console.log('here');
 
 
       let request = JSON.parse(JSON.stringify(this.request))
