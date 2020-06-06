@@ -47,8 +47,6 @@ export default {
   methods: {
     onSubmit(delay) {
 
-
-
       //validation
       if (!this.request.title || !this.request.description) {
         alert('All fields are required')

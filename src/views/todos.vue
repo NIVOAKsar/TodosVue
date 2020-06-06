@@ -87,7 +87,7 @@
 
 import todosStore from '@/store/todos'
 import { makeTodo } from '@/services/todoService'
-import { makeId } from '@/services/utilsService'
+import { makeId, makeObjectId, wait, setLoader } from '@/services/utilsService'
 
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
 
@@ -145,11 +145,12 @@ export default {
         '5edaa12763bb8e0000860bbb',
       ]
 
+      // callbacks
       const onSuccess = () => {
         console.log('[CLIENT] load succeeded!')
       }
-      const onFailure = (error) => {
-        console.log('[CLIENT]', error)
+      const onFailure = err => {
+        console.log('[CLIENT]', err)
       }
 
       this.loadMany(ids)
@@ -194,6 +195,7 @@ export default {
     ...mapActions({
       loadMany: 'todos/loadMany',
       removeMany: 'todos/removeMany',
+      saveMany: 'todos/saveMany',
       updateMany: 'todos/updateMany'
 
     }),
@@ -202,12 +204,19 @@ export default {
       this.openDialog('details', id)
     },
     async onTaskCardUpdateAction(id) {
+
       // callbacks
-      const onSuccess = () => {
-        console.log('[CLIENT]', `${id} was updated on server`);
+      const onSuccess = res => {
+        console.log('[CLIENT]', res);
       }
-      const onFailure = (error) => {
-        console.log('[CLIENT]', error);
+      const onFailure = err => {
+        console.log('[CLIENT]', err);
+      }
+      const onCallback = async () => {
+        console.log('bobo');
+
+        await wait(350)
+        this.assignTodo({ id, key: 'isSyncing', val: false })
       }
 
       // update api
@@ -216,43 +225,38 @@ export default {
           isDone: !this.todos[id].isDone
         }
       }
-      try {
-        await this.updateMany(payload)
-        onSuccess()
-      }
-      catch (error) {
-        onFailure(error)
-      }
+      const prm = this.updateMany(payload)
+        .then(onSuccess)
+        .catch(onFailure)
+        .finally(onCallback)
+
+      // TODO: handle request timeout (no error) - cancel isSyncing
+      // setLoader(prm)
+      // .catch(onCallback)
 
       // update state
+      this.assignTodo({ id, key: 'isSyncing', val: true })
       this.assignTodo({ id, key: 'isDone', val: !this.todos[id].isDone })
 
     },
     async onTaskCardRemoveAction(id) {
+
       // callbacks
-      const onSuccess = () => {
-        console.log('[CLIENT]', `${id} was removed on server`)
+      const onSuccess = res => {
+        console.log('[CLIENT]', res)
       }
-      const onFailure = (error) => {
-        console.log('[CLIENT]', error)
+      const onFailure = err => {
+        console.log('[CLIENT]', err)
       }
 
       // update api
-      try {
-        const ids = [id]
-        await this.removeMany(ids)
-        onSuccess()
-      }
-      catch (error) {
-        onFailure(error)
-      }
+      const ids = [id]
+      this.removeMany(ids)
+        .then(onSuccess)
+        .catch(onFailure)
 
       // update state
-      setTimeout(() => {
-        this.unassignTodos(id)
-      }, 350);
-
-      this.assignTodo({ id, key: 'isSyncing', val: true })
+      this.unassignTodos(id)
     },
     onTaskFormChangeTitle($event) {
       this.formRequest.title = $event.target.value;
@@ -262,43 +266,55 @@ export default {
     },
     onTaskFormCreateSubmit() {
       // callbacks
-      const onSuccess = () => {
-        // update ui
-        this.suspenseCreate = false
+      const onSuccess = res => {
+        console.log('[CLIENT]', res)
 
         if (this.currDialogView === 'create') {
           this.showDialog = false;
           this.formRequest = { title: '', description: '' };
         }
       }
+      const onFailure = err => {
+        console.log('[CLIENT]', err)
+      }
+      const onCallback = async () => {
+        await wait(350)
+        this.suspenseCreate = false
+      }
 
       // update ui
       this.suspenseCreate = true;
 
       // update api
-      setTimeout(onSuccess, 2000);
+      let todo = makeTodo(this.formRequest.title, this.formRequest.description)
+      const id = makeObjectId()
+      const payload = [{ id, ...todo }]
+      this.saveMany(payload)
+        .then(onSuccess)
+        .catch(onFailure)
+        .finally(onCallback)
 
       // update state
-      let todo = makeTodo(this.formRequest.title, this.formRequest.description)
-      const { makeObjectId } = import('@/services/utilsService')
-      this.assignTodos({ id: makeObjectId(), val: todo })
+      this.assignTodos({ id, val: todo })
+
     },
     async onTaskFormEditSubmit(id) {
+
       // callbacks
-      const onSuccess = () => {
-
-        console.log('[CLIENT]', `${id} was updated on server`);
-
-        // update state
-        this.assignTodo({ id, key: 'isSyncing', val: false })
+      const onSuccess = res => {
+        console.log('[CLIENT]', res);
 
         // update ui
         if (this.currDialogView === 'details') {
           this.showDialog = false;
         }
       }
-      const onFailure = (error) => {
-        console.log('[CLIENT]', error);
+      const onFailure = err => {
+        console.log('[CLIENT]', err);
+      }
+      const onCallback = async () => {
+        await wait(350)
+        this.assignTodo({ id, key: 'isSyncing', val: false })
       }
 
       // update api
@@ -308,13 +324,10 @@ export default {
           description: this.formRequest.description
         }
       }
-      try {
-        await this.updateMany(payload)
-        onSuccess()
-      }
-      catch (error) {
-        onFailure(error)
-      }
+      this.updateMany(payload)
+        .then(onSuccess)
+        .catch(onFailure)
+        .finally(onCallback)
 
       // update state
       this.assignTodo({ id, key: 'isSyncing', val: true })

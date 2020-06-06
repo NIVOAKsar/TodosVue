@@ -2,7 +2,6 @@ import Vue from 'vue';
 import { loadStorage, saveStorage, } from '@/services/utilsService';
 import { makeTodos } from '@/services/todoService';
 
-
 const Axios = require('axios')
 
 const axios = Axios.create({
@@ -48,14 +47,12 @@ let mutations = {
     }
 }
 let actions = {
-
     async loadMany({ commit }, ids) {
         if (!ids || !ids.length) throw new Error('no ids sent')
         ids = ids.join(',')
         try {
             const { data } = await axios.get('/todos/' + ids)
             Object.entries(data).forEach(([id, val]) => {
-
                 val = { ...val, isSyncing: false }
                 commit('assignTodos', { id, val })
             })
@@ -64,28 +61,41 @@ let actions = {
             throw new Error(error)
         }
     },
-    async removeMany({ }, ids) {
+    async removeMany(_, ids) {
         if (!ids || !ids.length) throw new Error('no ids sent')
         ids = ids.join(',')
         try {
-            await axios.delete('/todos/' + ids)
+            const { data } = await axios.delete('/todos/' + ids)
+            const { message } = data
+            return message
         }
         catch (error) {
             throw new Error(error)
         }
     },
-    async updateMany({ }, payload) {
+    async saveMany(_, payload) {
         if (!payload || !Object.entries(payload).length) throw new Error('no data sent')
         try {
-            await axios.patch('/todos', payload)
+            const { data } = await axios.post('/todos', payload)
+            const { message } = data
+            return message
+        }
+        catch (error) {
+            throw new Error(error)
+        }
+    },
+    async updateMany(_, payload) {
+        if (!payload || !Object.entries(payload).length) throw new Error('no data sent')
+        try {
+            const { data } = await axios.patch('/todos', payload)
+            const { message } = data
+            return message
         }
         catch (error) {
             throw new Error(error)
         }
     },
 
-    // saveMany({ }, payload) {
-    // },
 
 }
 

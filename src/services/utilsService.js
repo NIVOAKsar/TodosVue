@@ -47,8 +47,8 @@ export function wait(ms = 0) {
 }
 
 export function setLoader(prm, timer = 0) {
-    let timerPRM = new Promise((resolve, reject) => setTimeout(reject, timer));
-    return Promise.race(prm, timerPRM);
+    let timerPRM = new Promise((_, reject) => setTimeout(reject, timer));
+    return Promise.race([prm, timerPRM]);
 }
 
 export function copyToClipBoard(str) {
