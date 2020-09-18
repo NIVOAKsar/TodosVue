@@ -1,8 +1,7 @@
 <template>
-  <!-- v-show="show" -->
   <aside :style="vars" class="drawer" ref="drawer" :class="{'hidden':!visible}">
     <div class="drawer__content">
-      <button class="drawer__content__close--btn" @click="onCloseButtonClick">
+      <button class="drawer__content__close--btn" @click="$emit('closeClick')">
         <b-icon icon="x" scale="1.5" class="drawer__content__close--btn__i" />
       </button>
       <slot name="menu" />
@@ -29,12 +28,7 @@ export default {
         '--transform': this.visible ? `translateX(0)` : `translateX(-${this.width})`
       }
     }
-  },
-  methods: {
-    onCloseButtonClick() {
-      this.$emit('closeButtonClick')
-    }
-  },
+  }
 
 }
 </script>

@@ -7,27 +7,25 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.28",
-    "@fortawesome/free-solid-svg-icons": "^5.13.0",
-    "@fortawesome/vue-fontawesome": "^0.1.9",
     "animate.css": "^3.7.2",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.9.0",
     "core-js": "^3.6.4",
-    "element-ui": "^2.13.0",
+    "element-ui": "^2.13.2",
     "mongoose": "^5.9.16",
     "node-sass": "^4.13.1",
+    "register-service-worker": "^1.7.1",
     "sass-loader": "^8.0.2",
     "vue": "^2.6.11",
     "vue-mq": "^1.0.1",
-    "vue-ripple-directive": "^2.0.1",
     "vue-router": "^3.1.5",
     "vuex": "^3.1.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.2.0",
     "@vue/cli-service": "^4.2.0",
+    "vue-cli-plugin-pwa": "^4.6.0",
     "vue-template-compiler": "^2.6.11"
   }
 }

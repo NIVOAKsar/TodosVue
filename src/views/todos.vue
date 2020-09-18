@@ -46,40 +46,41 @@
       </section>
     </div>
     <button v-if="checkAddButton" class="todo-add" @click="onTaskAddClick">New</button>
-
     <el-dialog
       v-if="$mq === 'mobile'"
       :visible.sync="showDialog"
-      fullscreen
       :title="currDialogTitle"
       @opened="onDialogOpened"
       @closed="onDialogClosed"
+      fullscreen
     >
+      <!-- <template #title>
+        <p>{{currDialogTitle}}</p>
+      </template>-->
       <TodoForm
+        ref="createForm"
         v-show="currDialogView === 'create'"
+        :shown="showDialog"
         :request="formRequest"
         :suspense="suspenseCreate"
-        :action-text="'Add'"
+        action-text="Add"
         @changeTitle="onTaskFormChangeTitle"
         @changeDescription="onTaskFormChangeDescription"
         @submit="onTaskFormCreateSubmit"
       />
       <TodoForm
+        ref="detailsForm"
         v-show="currDialogView === 'details'"
-        :id="formId"
+        :shown="showDialog"
         :request="formRequest"
         :suspense="todos[formId] && todos[formId].isSyncing"
-        :action-text="'Save'"
+        action-text="Save"
         @changeTitle="onTaskFormChangeTitle"
         @changeDescription="onTaskFormChangeDescription"
-        @submit="onTaskFormEditSubmit"
+        @submit="onTaskFormEditSubmit(formId)"
       />
     </el-dialog>
-    <BottomSheet
-      v-if="$mq === 'mobile'"
-      class="todo-bottom-bar"
-      @actionClick="openDialog('create')"
-    />
+    <Footer v-if="$mq === 'mobile'" class="todo-bottom-bar" @actionClick="openDialog('create')" />
   </article>
 </template>
 
@@ -88,17 +89,11 @@
 import todosStore from '@/store/todos'
 import { makeTodo } from '@/services/todoService'
 import { makeId, makeObjectId, wait, setLoader } from '@/services/utilsService'
-
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
 
 
 export default {
   name: 'TodosPage',
-  props: {
-    show: {
-      default: false
-    }
-  },
   components: {
 
     TodoForm: () => ({
@@ -113,8 +108,8 @@ export default {
       component: import('@/components/todo/TodoDetails/index'),
       // loading: Loader
     }),
-    BottomSheet: () => ({
-      component: import('@/components/widgets/BottomSheet'),
+    Footer: () => ({
+      component: import('@/components/widgets/Footer'),
       // loading: Loader
     }),
 
@@ -127,33 +122,38 @@ export default {
       description: ''
     },
     showDialog: false,
-    currDialogView: 'create',
-    currDialogTitle: 'Create Todo',
+    currDialogView: '',
+    currDialogTitle: '',
   }),
   created() {
     if (!Object.entries(this.todos).length) {
-      const ids = [ // TODO: load from user document
-        '5edaa12763bb8e0000860bb2',
-        '5edaa12763bb8e0000860bb3',
-        '5edaa12763bb8e0000860bb4',
-        '5edaa12763bb8e0000860bb5',
-        '5edaa12763bb8e0000860bb6',
-        '5edaa12763bb8e0000860bb7',
-        '5edaa12763bb8e0000860bb8',
-        '5edaa12763bb8e0000860bb9',
-        '5edaa12763bb8e0000860bba',
-        '5edaa12763bb8e0000860bbb',
-      ]
-
       // callbacks
       const onSuccess = () => {
-        console.log('[CLIENT] load succeeded!')
+        console.log('[SERVER] load succeeded!')
       }
       const onFailure = err => {
-        console.log('[CLIENT]', err)
+        console.log('[SERVER]', err)
       }
 
-      this.loadMany(ids)
+      // TODO: load from user document
+      // const ids = [
+      //   '5edaa12763bb8e0000860bb2',
+      //   '5edaa12763bb8e0000860bb3',
+      //   '5edaa12763bb8e0000860bb4',
+      //   '5edaa12763bb8e0000860bb5',
+      //   '5edaa12763bb8e0000860bb6',
+      //   '5edaa12763bb8e0000860bb7',
+      //   '5edaa12763bb8e0000860bb8',
+      //   '5edaa12763bb8e0000860bb9',
+      //   '5edaa12763bb8e0000860bba',
+      //   '5edaa12763bb8e0000860bbb',
+      // ]
+
+      // this.loadMany(ids)
+      //   .then(onSuccess)
+      //   .catch(onFailure)
+
+      this.loadAll()
         .then(onSuccess)
         .catch(onFailure)
     }
@@ -161,6 +161,7 @@ export default {
   },
   mounted() {
     // this.$store.registerModule('todos', todosStore)
+
   },
   beforeDestroy() {
     // this.$store.unregisterModule('todos')
@@ -188,35 +189,29 @@ export default {
   },
   methods: {
     ...mapMutations({
-      assignTodos: 'todos/assignTodos',
-      assignTodo: 'todos/assignTodo',
-      unassignTodos: 'todos/unassignTodos'
+      assignTask: 'todos/assignTask',
+      updateTask: 'todos/updateTask',
+      deleteTask: 'todos/deleteTask'
     }),
     ...mapActions({
+      loadAll: 'todos/loadAll',
       loadMany: 'todos/loadMany',
       removeMany: 'todos/removeMany',
       saveMany: 'todos/saveMany',
       updateMany: 'todos/updateMany'
-
     }),
     onTaskCardEdit(id) {
       // update ui
       this.openDialog('details', id)
     },
-    async onTaskCardUpdateAction(id) {
+    onTaskCardUpdateAction(id) {
 
       // callbacks
       const onSuccess = res => {
-        console.log('[CLIENT]', res);
+        console.log(res);
       }
       const onFailure = err => {
-        console.log('[CLIENT]', err);
-      }
-      const onCallback = async () => {
-        console.log('bobo');
-
-        await wait(350)
-        this.assignTodo({ id, key: 'isSyncing', val: false })
+        console.log(err);
       }
 
       // update api
@@ -228,25 +223,19 @@ export default {
       const prm = this.updateMany(payload)
         .then(onSuccess)
         .catch(onFailure)
-        .finally(onCallback)
-
-      // TODO: handle request timeout (no error) - cancel isSyncing
-      // setLoader(prm)
-      // .catch(onCallback)
 
       // update state
-      this.assignTodo({ id, key: 'isSyncing', val: true })
-      this.assignTodo({ id, key: 'isDone', val: !this.todos[id].isDone })
+      this.updateTask({ id, key: 'isDone', val: !this.todos[id].isDone })
 
     },
-    async onTaskCardRemoveAction(id) {
+    onTaskCardRemoveAction(id) {
 
       // callbacks
       const onSuccess = res => {
-        console.log('[CLIENT]', res)
+        console.log(res)
       }
       const onFailure = err => {
-        console.log('[CLIENT]', err)
+        console.log(err)
       }
 
       // update api
@@ -256,7 +245,7 @@ export default {
         .catch(onFailure)
 
       // update state
-      this.unassignTodos(id)
+      this.deleteTask(id)
     },
     onTaskFormChangeTitle($event) {
       this.formRequest.title = $event.target.value;
@@ -267,18 +256,15 @@ export default {
     onTaskFormCreateSubmit() {
       // callbacks
       const onSuccess = res => {
-        console.log('[CLIENT]', res)
-
         if (this.currDialogView === 'create') {
           this.showDialog = false;
           this.formRequest = { title: '', description: '' };
         }
       }
       const onFailure = err => {
-        console.log('[CLIENT]', err)
+        console.log(err)
       }
-      const onCallback = async () => {
-        await wait(350)
+      const onSettled = () => {
         this.suspenseCreate = false
       }
 
@@ -292,29 +278,23 @@ export default {
       this.saveMany(payload)
         .then(onSuccess)
         .catch(onFailure)
-        .finally(onCallback)
+        .finally(onSettled)
 
       // update state
-      this.assignTodos({ id, val: todo })
+      this.assignTask({ id, val: todo })
 
     },
-    async onTaskFormEditSubmit(id) {
+    onTaskFormEditSubmit(id) {
 
       // callbacks
       const onSuccess = res => {
-        console.log('[CLIENT]', res);
-
         // update ui
         if (this.currDialogView === 'details') {
           this.showDialog = false;
         }
       }
       const onFailure = err => {
-        console.log('[CLIENT]', err);
-      }
-      const onCallback = async () => {
-        await wait(350)
-        this.assignTodo({ id, key: 'isSyncing', val: false })
+        console.log(err);
       }
 
       // update api
@@ -327,12 +307,10 @@ export default {
       this.updateMany(payload)
         .then(onSuccess)
         .catch(onFailure)
-        .finally(onCallback)
 
       // update state
-      this.assignTodo({ id, key: 'isSyncing', val: true })
-      this.assignTodo({ id, key: 'title', val: this.formRequest.title })
-      this.assignTodo({ id, key: 'description', val: this.formRequest.description })
+      this.updateTask({ id, key: 'title', val: this.formRequest.title })
+      this.updateTask({ id, key: 'description', val: this.formRequest.description })
     },
     onTaskAddClick() {
       // update state 
@@ -343,8 +321,32 @@ export default {
       this.currDialogTitle = 'Create Todo';
       this.formRequest = { title: '', description: '' };
     },
+    onScroll(ev) {
+      console.log('scroll')
+    },
     onDialogOpened() {
-      // console.log('opened => focus the input');
+      try {
+        switch (this.currDialogView) {
+          case 'create': {
+            const createForm = this.$refs.createForm.$el
+            const input = createForm[0]
+            input.focus()
+            break;
+          }
+          case 'details': {
+            const detailsForm = this.$refs.detailsForm.$el
+            const input = detailsForm[0]
+            input.selectionStart = input.value.length
+            input.selectionEnd = input.value.length
+            input.focus()
+            break;
+          }
+        }
+      }
+      catch (error) {
+        //
+      }
+
     },
     onDialogClosed() {
       // console.log('closed');
@@ -352,17 +354,20 @@ export default {
     },
     openDialog(view, targetId) {
       switch (view) {
-        case 'create': this.currDialogTitle = 'Create Todo';
+        case 'create':
+          this.currDialogView = 'create'
+          this.currDialogTitle = 'Create Todo';
           this.formRequest = { title: '', description: '' };
           break;
 
-        case 'details': this.currDialogTitle = 'Edit Todo';
+        case 'details':
+          this.currDialogView = 'details'
+          this.currDialogTitle = 'Edit Todo';
           this.formId = targetId;
           this.formRequest = {
             title: this.todos[targetId].title,
             description: this.todos[targetId].description,
           };
-
           break;
       }
       this.currDialogView = view;
@@ -370,7 +375,8 @@ export default {
     },
     closeDialog() {
       this.showDialog = false;
-    }
+    },
+
 
   }
 

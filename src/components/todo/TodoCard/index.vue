@@ -18,8 +18,8 @@
       <Actions
         :style="vars"
         :suspense="suspense"
-        @deleteClick="!suspense && onRemove(350)"
-        @editClick="!suspense && onEdit(null)"
+        @deleteClick="!suspense && onRemove()"
+        @editClick="!suspense && onEdit()"
       />
     </label>
   </div>
@@ -74,10 +74,10 @@ export default {
     }
   },
   methods: {
-    onEdit(delay) {
+    onEdit() {
       this.$emit('edit', this.id);
     },
-    onRemove(delay) {
+    onRemove() {
       this.$emit('removeAction', this.id);
     },
     onChange(ev) {

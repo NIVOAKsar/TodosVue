@@ -1,20 +1,14 @@
   <template>
-  <section class="bottom-sheet">
-    <!-- SEPERATE SECTION -->
-    <button class="bottom-sheet__add--btn" @click="onActionClick">
+  <footer class="bottom-sheet">
+    <button class="bottom-sheet__add--btn" @click="$emit('actionClick')">
       <b-icon icon="plus" font-scale="2" class="bottom-sheet__add--btn__i" />
     </button>
-    <!-- SEPERATE SECTION -->
-  </section>
+  </footer>
 </template>
 
 <script>
 export default {
-  methods: {
-    onActionClick() {
-      this.$emit('actionClick')
-    }
-  }
+
 }
 </script>
 

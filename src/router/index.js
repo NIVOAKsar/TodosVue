@@ -5,15 +5,14 @@ import /* webpackChunkName: "home" */ home from '../views/home.vue'
 Vue.use(VueRouter)
 
 const routes = [
+  // {
+  //   path: '/',
+  //   component: home
+  // },
+
   {
     path: '/',
-    // name: 'Home',
-    component: home
-  },
-  {
-    path: '/todos',
     props: true,
-    // name: 'About',
     component: () => import(/* webpackChunkName: "about" */ '../views/todos.vue')
   },
   {

@@ -1,10 +1,10 @@
 <template>
   <div class="actions">
     <button class="action__edit action" @click.prevent="$emit('editClick')">
-      <fa-icon v-if="!suspense" class="action__edit__i action__i" icon="pen" />
+      <b-icon v-if="!suspense" class="action__edit__i action__i" :icon="'pen'" font-scale="2" />
     </button>
     <button class="action__delete action" @click.prevent="$emit('deleteClick')">
-      <fa-icon v-if="!suspense" class="action__delete__i action__i" icon="trash" />
+      <b-icon v-if="!suspense" class="action__edit__i action__i" :icon="'trash'" font-scale="2" />
     </button>
     <b-spinner
       v-if="suspense"

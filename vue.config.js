@@ -11,6 +11,9 @@ module.exports = {
             css: {},
             scss: { prependData }
         }
+    },
+    pwa: {
+
     }
 };
 

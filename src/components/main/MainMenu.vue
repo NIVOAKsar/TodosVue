@@ -1,6 +1,12 @@
 <template>
   <nav class="menu">
-    <router-link class="menu__link" v-for="route in routes" :key="route.label" :to="route.url">
+    <router-link
+      v-for="route in routes"
+      :key="route.label"
+      :to="route.url"
+      @click.native="$emit('linkClick')"
+      class="menu__link"
+    >
       <b-icon class="menu__link__i" :icon="route.icon" font-scale="2" />
       <span class="menu__link__label">{{route.label}}</span>
     </router-link>
@@ -10,22 +16,30 @@
 <script>
 export default {
   data: () => ({
-    routes: [{
-      url: '/home',
-      label: 'Home',
-      icon: 'house',
-    },
-    {
-      url: '/todos',
-      label: 'Todos',
-      icon: 'list-task',
-    },
-    {
-      url: '/test',
-      label: 'Test',
-      icon: '',
+    routes:
+      [
+        {
+          url: '/home',
+          label: 'Home',
+          icon: 'house',
+        },
+        {
+          url: '/',
+          label: 'Todos',
+          icon: 'list-task',
+        },
+        {
+          url: '/settings',
+          label: 'Settings',
+          icon: 'gear',
+        },
+        // {
+        //   url: '/test',
+        //   label: 'Test',
+        //   icon: '',
 
-    }]
+        // }
+      ]
   })
 }
 </script>

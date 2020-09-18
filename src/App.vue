@@ -1,38 +1,40 @@
 <template>
   <div id="app" class="u-clr-bg-dark">
-    <Header class="header--wrapper u-clr-bg-normal" @menuButtonClick="showDrawer = true">
+    <Header
+      class="header--wrapper u-clr-bg-normal"
+      :class="currOffset > 0 && 'shadow'"
+      @actionClick="showDrawer = true"
+    >
       <MainMenu class="header__menu u-row" slot="menu" />
     </Header>
     <Drawer
       v-if="$mq === 'mobile'"
       :visible="showDrawer"
+      @closeClick="showDrawer = false"
       class="drawer--wrapper u-clr-bg-dark"
-      @closeButtonClick="showDrawer = false"
     >
-      <MainMenu class="drawer__menu u-col" slot="menu" />
+      <MainMenu class="drawer__menu u-col" slot="menu" @linkClick="onMenuLinkClick" />
     </Drawer>
     <transition name="fade">
       <router-view class="page--wrapper" />
     </transition>
     <div v-show="showDrawer" class="dark-mask" @click="showDrawer = false" />
-    <!-- <el-slider v-model="colorVal" :min="0" :max="360" class="slider" /> -->
   </div>
 </template>
 
 <script>
 import Header from '@/components/widgets/Header'
 import Drawer from '@/components/widgets/Drawer'
-import BottomSheet from '@/components/widgets/BottomSheet'
 import MainMenu from '@/components/main/MainMenu'
 export default {
   components: {
     Header,
     Drawer,
-    BottomSheet,
     MainMenu
   },
   data: () => ({
     showDrawer: false,
+    currOffset: 0
   }),
   watch: {
     $mq(val) {
@@ -40,6 +42,11 @@ export default {
         this.showDrawer = false;
       }
     },
+  },
+  mounted() {
+    window.addEventListener('scroll', ev => {
+      this.currOffset = window.pageYOffset
+    })
   },
   computed: {
     colorVal: {
@@ -53,12 +60,21 @@ export default {
       }
     },
   },
+  methods: {
+    onMenuLinkClick() {
+      this.showDrawer = false;
+    },
+
+  }
 
 }
 </script>
 
 <style lang="scss" scoped>
 @media all {
+  .shadow {
+    box-shadow: 0 4px 2px -2px gray;
+  }
   .drawer__menu {
     display: flex;
     flex-direction: column;
@@ -71,19 +87,26 @@ export default {
   }
 
   .header--wrapper {
+    // background-color: #fff;
+    top: 0;
     position: sticky;
+    z-index: 1;
   }
 
-  .slider {
-    max-width: 200px;
-    margin: 30px;
+  .drawer--wrapper {
+    // background-color: #fff;
   }
 }
 
 @media (max-width: $sm) {
   .header--wrapper {
-    padding: 10px;
+    padding: 0 10px;
+    height: 60px;
     margin-bottom: 10px;
+  }
+
+  .header__menu {
+    background-color: red !important;
   }
 
   .page--wrapper {
@@ -97,8 +120,9 @@ export default {
 }
 @media (min-width: $sm) {
   .header--wrapper {
-    padding: 10px;
-    margin-bottom: 20px;
+    padding: 0 10px;
+    height: 60px;
+    margin-bottom: 10px;
   }
 
   .drawer--wrapper {

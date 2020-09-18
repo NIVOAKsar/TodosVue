@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <form ref="form">
     <label for="title">Title</label>
     <input
       :disabled="suspense"
@@ -23,12 +23,12 @@
 </template>
 
 <script>
-export default {
+
+import Vue from 'vue'
+
+export default Vue.extend({
   name: 'TaskForm',
   props: {
-    id: {
-      default: ''
-    },
     request: {
       default: null
     },
@@ -37,11 +37,28 @@ export default {
     },
     actionText: {
       default: ''
+    },
+    shown: {
+      default: false
     }
   },
+  // watch: {
+  //   shown(val) {
+  //     setTimeout(() => {
+  //       console.log(val)
+
+  //     }, 500)
+  //     if (val) {
+  //       // if ready (mounted)
+  //       const form = this.$refs.form
+  //       console.log(form)
+  //     }
+  //   }
+  // },
 
   mounted() {
     // register event bus for dialog opened to focus input
+
   },
 
   methods: {
@@ -62,7 +79,7 @@ export default {
 
     },
   }
-}
+})
 </script>
 
 <style scoped lang="scss">
