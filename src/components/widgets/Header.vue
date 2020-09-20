@@ -1,5 +1,5 @@
 <template>
-  <Header style="display: flex; justify-content: space-between; align-items: center;">
+  <header style="display: flex; justify-content: space-between; align-items: center;">
     <button v-if="$mq === 'mobile'" class="header__menu--btn" @click="onActionClick">
       <b-icon icon="list" class="header__menu--btn__i" scale="1.5" />
     </button>
@@ -10,7 +10,7 @@
       src="https://via.placeholder.com/50"
       alt
     />
-  </Header>
+  </header>
 </template>
 
 <script>

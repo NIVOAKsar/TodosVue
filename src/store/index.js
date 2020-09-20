@@ -3,10 +3,12 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+import auth from './auth'
 import todos from './todos'
 
 export default new Vuex.Store({
   modules: {
+    auth,
     todos
   }
 })

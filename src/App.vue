@@ -1,24 +1,40 @@
 <template>
-  <div id="app" class="u-clr-bg-dark">
-    <Header
-      class="header--wrapper u-clr-bg-normal"
-      :class="currOffset > 0 && 'shadow'"
-      @actionClick="showDrawer = true"
+  <div id="app">
+    <section
+      v-if="$route.path === '/auth'"
+      style="min-height: 100vh; display: flex; flex-direction: column;"
     >
-      <MainMenu class="header__menu u-row" slot="menu" />
-    </Header>
-    <Drawer
-      v-if="$mq === 'mobile'"
-      :visible="showDrawer"
-      @closeClick="showDrawer = false"
-      class="drawer--wrapper u-clr-bg-dark"
+      <router-view
+        class="auth--wrapper"
+        style="min-height: 100vh; display: flex; flex-direction: column;"
+      />
+    </section>
+
+    <section
+      v-else
+      style="min-height: 100vh; display: flex; flex-direction: column;"
+      class="u-clr-bg-dark"
     >
-      <MainMenu class="drawer__menu u-col" slot="menu" @linkClick="onMenuLinkClick" />
-    </Drawer>
-    <transition name="fade">
-      <router-view class="page--wrapper" />
-    </transition>
-    <div v-show="showDrawer" class="dark-mask" @click="showDrawer = false" />
+      <Header
+        class="header--wrapper u-clr-bg-normal"
+        :class="currOffset > 0 && 'shadow'"
+        @actionClick="showDrawer = true"
+      >
+        <MainMenu class="header__menu u-row" slot="menu" />
+      </Header>
+      <Drawer
+        v-if="$mq === 'mobile'"
+        :visible="showDrawer"
+        @closeClick="showDrawer = false"
+        class="drawer--wrapper u-clr-bg-dark"
+      >
+        <MainMenu class="drawer__menu u-col" slot="menu" @linkClick="onMenuLinkClick" />
+      </Drawer>
+      <transition name="fade">
+        <router-view class="page--wrapper" />
+      </transition>
+      <div v-show="showDrawer" class="dark-mask" @click="showDrawer = false" />
+    </section>
   </div>
 </template>
 
@@ -109,6 +125,9 @@ export default {
     background-color: red !important;
   }
 
+  .auth--wrapper {
+    padding: 0 25px;
+  }
   .page--wrapper {
     padding: 0 10px;
   }

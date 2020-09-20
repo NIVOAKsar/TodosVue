@@ -13,7 +13,12 @@ const routes = [
   {
     path: '/',
     props: true,
-    component: () => import(/* webpackChunkName: "about" */ '../views/todos.vue')
+    component: () => import(/* webpackChunkName: "todos" */ '../views/todos.vue')
+  },
+  {
+    path: '/auth',
+    props: true,
+    component: () => import(/* webpackChunkName: "auth" */ '../views/auth.vue')
   },
   {
     path: '/test',
@@ -25,6 +30,13 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  // if (to.path === '/') {
+  //   next('/auth')
+  // }
+  next()
 })
 
 export default router

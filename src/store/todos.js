@@ -3,10 +3,7 @@ import { loadStorage, saveStorage } from "@/services/utilsService";
 import { makeTodos } from "@/services/todoService";
 
 const Axios = require("axios");
-
-const baseURL = `http://${
-  process.env.NODE_ENV === "development" ? "localhost:3003" : ""
-  }/api`;
+const baseURL = `http://${process.env.NODE_ENV === "development" ? "localhost:3003" : ""}/api`;
 const axios = Axios.create({ baseURL });
 
 let state = () => {
