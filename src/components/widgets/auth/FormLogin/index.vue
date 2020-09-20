@@ -129,7 +129,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import url("../../../../node_modules/animate.css/animate.css");
+// @import url("../../../../../node_modules/animate.css/animate.css");
 
 .error-message {
   overflow: hidden;

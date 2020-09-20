@@ -6,12 +6,17 @@
     <button class="action__delete action" @click.prevent="$emit('deleteClick')">
       <b-icon v-if="!suspense" class="action__edit__i action__i" :icon="'trash'" font-scale="2" />
     </button>
-    <b-spinner
+    <!-- <b-spinner
       v-if="suspense"
       small
       label="Spinning"
       class="action__delete__spinner action__spinner"
-    />
+    />-->
+    <span
+      v-if="suspense"
+      class="spinner-border action__delete__spinner action__spinner"
+      style="width: 20px; height: 20px;"
+    ></span>
   </div>
 </template>
 

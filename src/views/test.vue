@@ -65,13 +65,11 @@
 </template>
 
 <script>
-// import Test from '@/components/Test';
-import ColorPicker from '@/components/widgets/ColorPicker'
+import ColorPicker from '@/components/widgets/common/ColorPicker/index'
 export default {
-  name: 'Test',
+  name: 'PageTest',
   components: {
     ColorPicker
-    // Test
   },
   data: () => ({
     baseHue: 60,

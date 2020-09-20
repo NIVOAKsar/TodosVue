@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import Content from '@/components/todo/TodoCard/Content'
-import Actions from '@/components/todo/TodoCard/Actions'
+import Content from './Content'
+import Actions from './Actions'
 export default {
   name: 'TaskCard',
   components: {

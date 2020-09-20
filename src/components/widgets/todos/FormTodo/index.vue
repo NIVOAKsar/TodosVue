@@ -17,7 +17,8 @@
     />
     <button :disabled="suspense" @click.prevent="!suspense && onSubmit($event)" type="submit">
       <div v-if="!suspense">{{actionText}}</div>
-      <b-spinner v-else small label="Spinning" />
+      <span v-else class="spinner-border" style="width: 20px; height: 20px;"></span>
+      <!-- <b-spinner v-else small label="Spinning" /> -->
     </button>
   </form>
 </template>

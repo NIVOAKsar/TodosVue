@@ -2,7 +2,6 @@ import Vue from "vue";
 import { loadStorage, saveStorage } from "@/services/utilsService";
 import { wait } from '@/services/utilsService'
 
-
 const Axios = require("axios");
 const baseURL = `http://${process.env.NODE_ENV === "development" ? "localhost:3003" : ""}/api`;
 const axios = Axios.create({ baseURL });

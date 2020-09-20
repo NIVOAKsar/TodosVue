@@ -3,7 +3,7 @@
     <div class="todo-content">
       <section class="todo-list">
         <transition-group v-if="todosForDisplay">
-          <TodoCard
+          <card-todo
             v-for="todo in todosForDisplay"
             :key="todo.id"
             :id="todo.id"
@@ -21,7 +21,7 @@
       </section>
       <section v-if="$mq !=='mobile'" class="todo-editor">
         <p class="todo-editor-title">{{currDialogTitle}}</p>
-        <TodoForm
+        <form-todo
           v-show="currDialogView === 'create'"
           :request="formRequest"
           :suspense="suspenseCreate"
@@ -31,7 +31,7 @@
           @changeDescription="onTaskFormChangeDescription"
           @submit="onTaskFormCreateSubmit"
         />
-        <TodoForm
+        <form-todo
           v-show="currDialogView === 'details'"
           :id="formId"
           :request="formRequest"
@@ -54,10 +54,7 @@
       @closed="onDialogClosed"
       fullscreen
     >
-      <!-- <template #title>
-        <p>{{currDialogTitle}}</p>
-      </template>-->
-      <TodoForm
+      <form-todo
         ref="createForm"
         v-show="currDialogView === 'create'"
         :shown="showDialog"
@@ -68,7 +65,7 @@
         @changeDescription="onTaskFormChangeDescription"
         @submit="onTaskFormCreateSubmit"
       />
-      <TodoForm
+      <form-todo
         ref="detailsForm"
         v-show="currDialogView === 'details'"
         :shown="showDialog"
@@ -91,28 +88,12 @@ import { makeTodo } from '@/services/todoService'
 import { makeId, makeObjectId, wait, setLoader } from '@/services/utilsService'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
 
-
 export default {
-  name: 'TodosPage',
+  name: 'PageTodos',
   components: {
-
-    TodoForm: () => ({
-      component: import('@/components/todo/TodoForm/index'),
-      // loading: Loader
-    }),
-    TodoCard: () => ({
-      component: import('@/components/todo/TodoCard/index'),
-      // loading: Loader
-    }),
-    TodoDetails: () => ({
-      component: import('@/components/todo/TodoDetails/index'),
-      // loading: Loader
-    }),
-    Footer: () => ({
-      component: import('@/components/widgets/Footer'),
-      // loading: Loader
-    }),
-
+    FormTodo: () => import('@/components/widgets/todos/FormTodo'),
+    CardTodo: () => import('@/components/widgets/todos/CardTodo'),
+    Footer: () => import('@/components/widgets/common/Footer'),
   },
   data: () => ({
     suspenseCreate: false,
@@ -161,7 +142,6 @@ export default {
   },
   mounted() {
     // this.$store.registerModule('todos', todosStore)
-
   },
   beforeDestroy() {
     // this.$store.unregisterModule('todos')

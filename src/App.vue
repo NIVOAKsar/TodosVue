@@ -1,24 +1,33 @@
 <template>
   <div id="app">
-    <section
-      v-if="$route.path === '/auth'"
-      style="min-height: 100vh; display: flex; flex-direction: column;"
-    >
-      <router-view
-        class="auth--wrapper"
-        style="min-height: 100vh; display: flex; flex-direction: column;"
-      />
+    <section v-if="$route.path === '/auth'" class="auth--section">
+      <router-view class="auth--wrapper" />
     </section>
-
-    <section
-      v-else
-      style="min-height: 100vh; display: flex; flex-direction: column;"
-      class="u-clr-bg-dark"
-    >
+    <section v-else-if="$route.path === '/account'" class="u-clr-bg-dark">
       <Header
         class="header--wrapper u-clr-bg-normal"
         :class="currOffset > 0 && 'shadow'"
         @actionClick="showDrawer = true"
+      >
+        <MainMenu class="header__menu u-row" slot="menu" />
+      </Header>
+      <Drawer
+        v-if="$mq === 'mobile'"
+        :visible="showDrawer"
+        @closeClick="showDrawer = false"
+        class="drawer--wrapper u-clr-bg-dark"
+      >
+        <MainMenu class="drawer__menu u-col" slot="menu" @linkClick="onMenuLinkClick" />
+      </Drawer>
+      <router-view class="page--wrapper" />
+    </section>
+
+    <section v-else class="u-clr-bg-dark">
+      <Header
+        :show-avatar="true"
+        :class="currOffset > 0 && 'shadow'"
+        @actionClick="showDrawer = true"
+        class="header--wrapper u-clr-bg-normal"
       >
         <MainMenu class="header__menu u-row" slot="menu" />
       </Header>
@@ -39,9 +48,9 @@
 </template>
 
 <script>
-import Header from '@/components/widgets/Header'
-import Drawer from '@/components/widgets/Drawer'
-import MainMenu from '@/components/main/MainMenu'
+import Header from '@/components/widgets/common/Header'
+import Drawer from '@/components/widgets/common/Drawer'
+import MainMenu from '@/components/widgets/common/MainMenu'
 export default {
   components: {
     Header,
@@ -88,6 +97,11 @@ export default {
 
 <style lang="scss" scoped>
 @media all {
+  section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
   .shadow {
     box-shadow: 0 4px 2px -2px gray;
   }
@@ -127,6 +141,9 @@ export default {
 
   .auth--wrapper {
     padding: 0 25px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
   .page--wrapper {
     padding: 0 10px;

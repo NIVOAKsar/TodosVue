@@ -28,13 +28,14 @@
 </template>
 
 <script>
-import FormLogin from '@/components/auth/FormLogin'
-import FormSignup from '@/components/auth/FormSignup'
+import FormLogin from '@/components/widgets/auth/FormLogin'
+import FormSignup from '@/components/widgets/auth/FormSignup'
 import { wait } from '@/services/utilsService'
 
 import { mapActions } from 'vuex'
 
 export default {
+  name: 'PageAuth',
   components: {
     FormLogin,
     FormSignup
